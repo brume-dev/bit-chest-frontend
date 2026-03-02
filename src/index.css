@@ -1,1 +1,28 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+    --font-sans: "Celias", ui-sans-serif, system-ui, sans-serif;
+
+    --color-bitchest-green: #01ff19;
+    --color-bitchest-red: #ff5964;
+    --color-bitchest-white: #ffffff;
+    --color-bitchest-dark-blue: #38618c;
+    --color-bitchest-light-blue: #35a7ff;
+
+    --color-primary: var(--color-bitchest-dark-blue);
+    --color-secondary: var(--color-bitchest-light-blue);
+    --color-accent: var(--color-bitchest-green);
+    --color-neutral: var(--color-bitchest-dark-blue);
+    --color-base-100: var(--color-bitchest-white);
+    --color-info: var(--color-bitchest-light-blue);
+    --color-success: var(--color-bitchest-green);
+    --color-error: var(--color-bitchest-red);
+}
+@font-face {
+    font-family: "Celias";
+    src: url("./fonts/celias.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
