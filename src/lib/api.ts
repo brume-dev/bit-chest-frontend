@@ -35,8 +35,14 @@ export async function register(data: Types.RegisterRequest) {
   return r;
 }
 
+export async function getCurrentUser() {
+  const r = await fetcher<Types.User>("/auth/me");
+  return r;
+}
+
 export async function getTransactions() {
-  return fetcher<{ transactions: Types.Transaction[] }>("/transaction").then((r) => r.transactions);
+  const r = await fetcher<{ transactions: Types.Transaction[] }>("/transaction");
+  return r.transactions;
 }
 
 export async function getTransaction(id: string) {

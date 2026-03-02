@@ -24,6 +24,13 @@ export function useRegister() {
   });
 }
 
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: Api.getCurrentUser,
+  });
+}
+
 export function useLogout() {
   const queryClient = useQueryClient();
   return useMutation({
