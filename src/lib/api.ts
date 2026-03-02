@@ -1,10 +1,8 @@
 import type * as Types from "../types";
 
-const API_URL = import.meta.env.API_URL;
-
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   const token = localStorage.getItem("authToken");
-  const res = await fetch(`${API_URL}${url}`, {
+  const res = await fetch(`/api${url}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +20,7 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export async function login(data: Types.LoginRequest) {
-  const r = await fetcher<Types.AuthResponse>("/login", {
+  const r = await fetcher<Types.AuthResponse>("/auth/login", {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -30,7 +28,7 @@ export async function login(data: Types.LoginRequest) {
 }
 
 export async function register(data: Types.RegisterRequest) {
-  const r = await fetcher<Types.AuthResponse>("/register", {
+  const r = await fetcher<Types.AuthResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(data),
   });
