@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Briefcase, LayoutDashboard, Settings, User as UserIcon } from "lucide-react";
+import { ArrowLeftRightIcon, BriefcaseIcon, LayoutDashboardIcon, UserIcon } from "lucide-react";
 import { Link, useLocation, useOutletContext } from "react-router";
 import type { User } from "../types";
 import { Logo } from "./logo";
@@ -9,18 +9,18 @@ export function Sidebar() {
   const user = useOutletContext<User>();
 
   const userNavItems = [
-    { name: "Dashboard", path: "/", icon: <LayoutDashboard size={20} /> },
-    { name: "Trade", path: "/trade", icon: <ArrowLeftRight size={20} /> },
-    { name: "Portfolio", path: "/portfolio", icon: <Briefcase size={20} /> },
+    { name: "Dashboard", path: "/", icon: <LayoutDashboardIcon size={20} /> },
+    { name: "Trade", path: "/trade", icon: <ArrowLeftRightIcon size={20} /> },
+    { name: "Portfolio", path: "/portfolio", icon: <BriefcaseIcon size={20} /> },
   ];
 
   const adminNavItems = [
-    { name: "Dashboard", path: "/", icon: <LayoutDashboard size={20} /> },
+    { name: "Dashboard", path: "/", icon: <LayoutDashboardIcon size={20} /> },
     { name: "Clients", path: "/clients", icon: <UserIcon size={20} /> },
-    { name: "Cryptos", path: "/cryptos", icon: <Briefcase size={20} /> },
-  ]
+    { name: "Cryptos", path: "/cryptos", icon: <BriefcaseIcon size={20} /> },
+  ];
 
-  const navItems = user.roles.includes("ROLE_ADMIN") ? adminNavItems: userNavItems
+  const navItems = user.roles.includes("ROLE_ADMIN") ? adminNavItems : userNavItems;
 
   return (
     <div className="flex flex-col h-screen w-64 bg-base-100 border-r border-neutral/20">
