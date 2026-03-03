@@ -1,6 +1,6 @@
 import { ArrowLeftRightIcon, BriefcaseIcon, LayoutDashboardIcon, UserIcon } from "lucide-react";
 import { Link, useLocation, useOutletContext } from "react-router";
-import type { User } from "../types";
+import type { User } from "../lib/types";
 import { Logo } from "./logo";
 import { SidebarLogoutButton } from "./sidebar-logout-button";
 

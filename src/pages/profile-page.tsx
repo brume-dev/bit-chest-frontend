@@ -5,7 +5,7 @@ import { Sidebar } from "../components/sidebar";
 import { UpdateProfileSection } from "../components/update-profile-section";
 import { getInitials } from "../lib/helpers";
 import { useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
-import type { UpdateCurrentUserRequest } from "../types";
+import type { UpdateCurrentUserRequest } from "../lib/types";
 
 export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);

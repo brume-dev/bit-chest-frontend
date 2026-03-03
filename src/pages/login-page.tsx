@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { Field } from "../components/form-field";
 import { Logo } from "../components/logo";
 import { useLogin } from "../lib/hooks";
-import type { LoginRequest } from "../types";
+import type { LoginRequest } from "../lib/types";
 
 export function LoginPage() {
   const navigate = useNavigate();
