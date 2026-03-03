@@ -5,6 +5,7 @@ export interface User {
   email: string;
   phoneNumber: string;
   roles: string[];
+  balance: number;
 }
 
 export interface Transaction {

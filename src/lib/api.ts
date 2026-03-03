@@ -43,7 +43,7 @@ export async function getCurrentUser() {
 export async function updateCurrentUser(data: Types.UpdateCurrentUserRequest) {
   const r = await fetcher<Types.AuthResponse>("/auth/me", {
     method: "PATCH",
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   if (r.token) {
     localStorage.setItem("authToken", r.token);
@@ -80,8 +80,8 @@ export async function getCrypto(id: string) {
 }
 
 export async function getUsers() {
-  const r = await fetcher<{ users: Types.User[] }>("/user");
-  return r.users;
+  const r = await fetcher<Types.User[]>("/user");
+  return r;
 }
 
 export async function getUser(id: string) {
