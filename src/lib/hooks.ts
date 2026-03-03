@@ -17,8 +17,8 @@ export function useRegister() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: Api.register,
-    onSuccess: (data) => {
-      localStorage.setItem("authToken", data.token);
+    // Register doesn't return a token — user must log in after registering
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth"] });
     },
   });
@@ -33,11 +33,10 @@ export function useCurrentUser() {
 
 export function useUpdateCurrentUser() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: Types.UpdateCurrentUserRequest) => Api.updateCurrentUser(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"]})
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
 }
@@ -61,7 +60,7 @@ export function useTransactions() {
   });
 }
 
-export function useTransaction(id: string) {
+export function useTransaction(id: number) {
   return useQuery({
     queryKey: ["transactions", id],
     queryFn: () => Api.getTransaction(id),
@@ -75,9 +74,12 @@ export function useCreateTransaction() {
     mutationFn: Api.createTransaction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      // Also invalidate auth/me since balance changes on transaction
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
 }
+
 export function useCryptos() {
   return useQuery({
     queryKey: ["cryptos"],
@@ -85,7 +87,7 @@ export function useCryptos() {
   });
 }
 
-export function useCrypto(id: string) {
+export function useCrypto(id: number) {
   return useQuery({
     queryKey: ["cryptos", id],
     queryFn: () => Api.getCrypto(id),
@@ -100,7 +102,7 @@ export function useUsers() {
   });
 }
 
-export function useUser(id: string) {
+export function useUser(id: number) {
   return useQuery({
     queryKey: ["users", id],
     queryFn: () => Api.getUser(id),
@@ -121,7 +123,8 @@ export function useCreateUser() {
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Types.UpdateUserRequest }) => Api.updateUser(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Types.UpdateUserRequest }) =>
+      Api.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },

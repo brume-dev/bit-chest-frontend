@@ -1,28 +1,41 @@
 export interface User {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
   roles: string[];
-  balance: number;
+  balance: string; // DECIMAL comes back as string from PHP/JSON
 }
 
 export interface Transaction {
-  id: string;
-  cryptoId: string;
-  priceId: string;
-  amount: number;
+  id: number;
   type: "buy" | "sell";
-  createdAt: string;
-  userId: string;
+  amount: string; // DECIMAL comes back as string
+  date: string;   // was createdAt — backend sends "date"
+  crypto: {
+    id: number;
+    name: string;
+    abbreviation: string; // was "symbol" — backend sends "abbreviation"
+  };
+  price: {
+    id: number;
+    value: string; // DECIMAL
+    date: string;
+  };
 }
 
 export interface Crypto {
-  id: string;
+  id: number;
   name: string;
-  symbol: string;
-  price: number;
+  abbreviation: string; // was "symbol"
+  prices: Price[];      // backend serializes the full prices collection
+}
+
+export interface Price {
+  id: number;
+  value: string; // DECIMAL
+  date: string;
 }
 
 export interface LoginRequest {
@@ -39,19 +52,33 @@ export interface RegisterRequest {
 }
 
 export interface UpdateCurrentUserRequest {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
+  firstName?: string;  // was all required — PATCH, so all optional
+  lastName?: string;
+  phoneNumber?: string;
 }
 
 export interface AuthResponse {
-  user: User;
+  // Login is handled by the JWT firewall and returns a token directly.
+  // Register and /auth/me return user data but NO token.
+  // These are two different shapes — split them:
   token: string;
 }
 
+export interface RegisterResponse {
+  message: string;
+  user: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    balance: string;
+  };
+}
+
 export interface CreateTransactionRequest {
-  cryptoId: string;
-  priceId: string;
+  cryptoId: number;
+  priceId: number;
   amount: number;
   type: "buy" | "sell";
 }
