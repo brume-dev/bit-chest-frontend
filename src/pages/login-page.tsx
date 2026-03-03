@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Logo } from "../components/logo";
 import { useLogin } from "../lib/hooks";
@@ -9,7 +9,7 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const loginMutation = useLogin();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
@@ -73,7 +73,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={isPending}
-            className="btn w-full mt-4 bg-secondary hover:bg-sky-500 text-white border-none disabled:bg-gray-300"
+            className="btn btn-secondary w-full mt-4 text-white border-none disabled:bg-gray-300"
           >
             {isPending ? <span className="loading loading-spinner loading-sm" /> : "Sign In"}
           </button>

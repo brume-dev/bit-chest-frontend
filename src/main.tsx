@@ -7,6 +7,7 @@ import { IndexPage } from "./pages/index-page";
 import { LoginPage } from "./pages/login-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
+import { ProfilePage } from "./pages/profile-page";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ createRoot(document.querySelector("#root")!).render(
         <Routes>
           <Route element={<AuthGuard />}>
             <Route path="/" element={<IndexPage />} />
+            <Route path="/profile" element={<ProfilePage/>} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
