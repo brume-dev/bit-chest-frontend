@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mail, Phone, User } from "lucide-react";
 import { useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
+import { Sidebar } from "../components/sidebar";
 import * as Types from "../types"
 
 function getInitials(user: Types.User) {
@@ -8,7 +9,6 @@ function getInitials(user: Types.User) {
 }
 
 export function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"personal" | "security" | "settings">("personal");
   const [isEditing, setIsEditing] = useState(false);
 
   const { data: user, isLoading } = useCurrentUser();
@@ -36,66 +36,46 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <div className="h-1.5 w-full bg-secondary" />
+    <div className="flex min-h-screen bg-slate-50 font-sans">
+      <Sidebar />
 
-      <div className="max-w-3xl mx-auto px-4 py-10">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-secondary/10 border-2 border-secondary/20 flex items-center justify-center">
-              <span className="text-secondary font-bold text-lg">
-                {user ? getInitials(user) : "—"}
-              </span>
+      <main className="flex-1 p-8">
+        <div className="max-w-3xl mx-auto px-4 py-10">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-secondary/10 border-2 border-secondary/20 flex items-center justify-center">
+                <span className="text-secondary font-bold text-lg">
+                  {user ? getInitials(user) : "—"}
+                </span>
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-neutral">
+                  {user ? `${user.firstName} ${user.lastName}` : "—"}
+                </h1>
+                <p className="text-sm text-gray-400">{user?.email ?? "—"}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-neutral">
-                {user ? `${user.firstName} ${user.lastName}` : "—"}
-              </h1>
-              <p className="text-sm text-gray-400">{user?.email ?? "—"}</p>
-            </div>
-          </div>
 
-          {!isEditing ? (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="btn btn-secondary text-white border-none btn-sm px-5"
-            >
-              Edit Profile
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setIsEditing(false)}
-              className="btn btn-ghost btn-sm px-5 text-gray-500"
-            >
-              Cancel
-            </button>
-          )}
-        </div>
-
-        {/* Tabs */}
-        <div className="border-b border-base-200 mb-6">
-          <div className="flex gap-6">
-            {(["personal", "security", "settings"] as const).map((tab) => (
+            {!isEditing ? (
               <button
-                key={tab}
                 type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`pb-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-                  activeTab === tab
-                    ? "border-secondary text-secondary"
-                    : "border-transparent text-gray-400 hover:text-gray-600"
-                }`}
+                onClick={() => setIsEditing(true)}
+                className="btn btn-secondary text-white border-none btn-sm px-5"
               >
-                {tab === "personal" ? "Personal Details" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                Edit Profile
               </button>
-            ))}
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="btn btn-ghost btn-sm px-5 text-gray-500"
+              >
+                Cancel
+              </button>
+            )}
           </div>
-        </div>
 
-        {activeTab === "personal" && (
           <form onSubmit={handleSubmit} className="space-y-4">
             <Section title="Personal Information">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -169,16 +149,8 @@ export function ProfilePage() {
               </div>
             )}
           </form>
-        )}
-
-        {activeTab === "security" && (
-          <div className="text-sm text-gray-400 text-center py-12">Security settings coming soon.</div>
-        )}
-
-        {activeTab === "settings" && (
-          <div className="text-sm text-gray-400 text-center py-12">App settings coming soon.</div>
-        )}
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -4,7 +4,7 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber: string;
-  role: "user" | "admin";
+  roles: string[];
 }
 
 export interface Transaction {
