@@ -13,7 +13,7 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || `API Error: ${res.status}`);
+    throw new Error(errorData.message || errorData.error || `API Error: ${res.status}`);
   }
   if (res.status === 204) return {} as T;
   return res.json();
@@ -28,7 +28,8 @@ export async function login(data: Types.LoginRequest) {
 }
 
 export async function register(data: Types.RegisterRequest) {
-  const r = await fetcher<Types.AuthResponse>("/auth/register", {
+  // Register returns { message, user } — not a token
+  const r = await fetcher<Types.RegisterResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -41,14 +42,11 @@ export async function getCurrentUser() {
 }
 
 export async function updateCurrentUser(data: Types.UpdateCurrentUserRequest) {
-  const r = await fetcher<Types.AuthResponse>("/auth/me", {
+  // PATCH /auth/me returns User, not AuthResponse (no token)
+  const r = await fetcher<Types.User>("/auth/me", {
     method: "PATCH",
     body: JSON.stringify(data),
   });
-  if (r.token) {
-    localStorage.setItem("authToken", r.token);
-  }
-
   return r;
 }
 
@@ -57,10 +55,11 @@ export async function getTransactions() {
   return r.transactions;
 }
 
-export async function getTransaction(id: string) {
+export async function getTransaction(id: number) {
   const r = await fetcher<{ transaction: Types.Transaction }>(`/transaction/${id}`);
   return r.transaction;
 }
+
 export async function createTransaction(data: Types.CreateTransactionRequest) {
   const r = await fetcher<{ transaction: Types.Transaction }>("/transaction", {
     method: "POST",
@@ -70,13 +69,15 @@ export async function createTransaction(data: Types.CreateTransactionRequest) {
 }
 
 export async function getCryptos() {
-  const r = await fetcher<{ cryptos: Crypto[] }>("/crypto");
-  return r.cryptos;
+  // Backend returns a plain array, not { cryptos: [] }
+  const r = await fetcher<Types.Crypto[]>("/crypto");
+  return r;
 }
 
-export async function getCrypto(id: string) {
-  const r = await fetcher<{ crypto: Crypto }>(`/crypto/${id}`);
-  return r.crypto;
+export async function getCrypto(id: number) {
+  // Backend returns a plain Crypto object, not { crypto: ... }
+  const r = await fetcher<Types.Crypto>(`/crypto/${id}`);
+  return r;
 }
 
 export async function getUsers() {
@@ -84,9 +85,10 @@ export async function getUsers() {
   return r;
 }
 
-export async function getUser(id: string) {
-  const r = await fetcher<{ user: Types.User }>(`/user/${id}`);
-  return r.user;
+export async function getUser(id: number) {
+  // Backend returns plain User object, not { user: ... }
+  const r = await fetcher<Types.User>(`/user/${id}`);
+  return r;
 }
 
 export async function createUser(data: Types.CreateUserRequest) {
@@ -97,17 +99,19 @@ export async function createUser(data: Types.CreateUserRequest) {
   return r.user;
 }
 
-export async function updateUser(id: string, data: Types.UpdateUserRequest) {
-  const r = await fetcher<{ user: Types.User }>(`/user/${id}`, {
+export async function updateUser(id: number, data: Types.UpdateUserRequest) {
+  // Backend returns plain User object, not { user: ... }
+  const r = await fetcher<Types.User>(`/user/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
-  return r.user;
+  return r;
 }
 
-export async function deleteUser(id: string) {
-  const r = await fetcher<{ user: Types.User }>(`/user/${id}`, {
+export async function deleteUser(id: number) {
+  // Backend returns plain User object, not { user: ... }
+  const r = await fetcher<Types.User>(`/user/${id}`, {
     method: "DELETE",
   });
-  return r.user;
+  return r;
 }

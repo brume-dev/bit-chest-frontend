@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
-import { type SubmitEvent, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Logo } from "../components/logo";
 import { useLogin } from "../lib/hooks";
@@ -9,12 +9,9 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const loginMutation = useLogin();
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  function loginAction(formData: FormData) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-
     loginMutation.mutate(
       { email, password },
       {
@@ -23,7 +20,7 @@ export function LoginPage() {
         },
       },
     );
-  };
+  }
 
   const isPending = loginMutation.isPending;
   const errorMessage = loginMutation.error?.message;
@@ -36,7 +33,7 @@ export function LoginPage() {
           <h2 className="text-xl font-semibold text-neutral mb-6">Login</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={loginAction} className="space-y-4">
           <Field label="Email Address" id="email">
             <input
               id="email"
