@@ -1,24 +1,25 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@plugin "daisyui/theme" {
+    name: "bitchest";
+    default: true;
+    color-scheme: light;
+
+    --color-primary: #38618c;
+    --color-secondary: #35a7ff;
+    --color-accent: #01ff19;
+    --color-neutral: #38618c;
+    --color-base-100: #ffffff;
+    --color-info: #35a7ff;
+    --color-success: #01ff19;
+    --color-error: #ff5964;
+}
+
 @theme {
     --font-sans: "Celias", ui-sans-serif, system-ui, sans-serif;
-
-    --color-bitchest-green: #01ff19;
-    --color-bitchest-red: #ff5964;
-    --color-bitchest-white: #ffffff;
-    --color-bitchest-dark-blue: #38618c;
-    --color-bitchest-light-blue: #35a7ff;
-
-    --color-primary: var(--color-bitchest-dark-blue);
-    --color-secondary: var(--color-bitchest-light-blue);
-    --color-accent: var(--color-bitchest-green);
-    --color-neutral: var(--color-bitchest-dark-blue);
-    --color-base-100: var(--color-bitchest-white);
-    --color-info: var(--color-bitchest-light-blue);
-    --color-success: var(--color-bitchest-green);
-    --color-error: var(--color-bitchest-red);
 }
+
 @font-face {
     font-family: "Celias";
     src: url("./fonts/celias.woff2") format("woff2");

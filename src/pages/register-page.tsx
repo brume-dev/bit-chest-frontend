@@ -31,8 +31,8 @@ export function RegisterPage() {
   const errorMessage = registerMutation.error?.message;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
-      <div className="bg-base-100 rounded-2xl shadow-xl w-full  max-w-md p-6 sm:p-8">
+    <div className="min-h-screen flex items-center justify-center p-4 font-sans">
+      <div className="bg-base-100 rounded-2xl shadow-xl w-full max-w-md p-6 sm:p-8">
         <div className="flex justify-center items-center flex-col">
           <Logo />
           <h2 className="text-xl font-semibold text-neutral mb-6">Create Your Account</h2>
@@ -97,29 +97,30 @@ export function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-3 flex items-center text-neutral/40 hover:text-secondary"
               >
                 {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </Field>
 
-          {errorMessage && <p className="text-error text-xs text-center font-medium">{errorMessage}</p>}
+          {errorMessage && (
+            <p className="text-error text-xs text-center font-medium">{errorMessage}</p>
+          )}
 
           <button
             type="submit"
             disabled={isPending}
-            className="btn w-full mt-4 bg-secondary hover:bg-sky-500 text-white border-none disabled:bg-gray-300"
+            className="btn btn-secondary w-full mt-4 text-white border-none disabled:bg-neutral/30"
           >
             {isPending ? <span className="loading loading-spinner loading-sm" /> : "Sign Up"}
           </button>
         </form>
 
-        {/* Footer */}
-        <div className="text-center mt-6 text-xs text-gray-500">
+        <div className="text-center mt-6 text-xs text-neutral/50">
           <p>
             Already have an account?{" "}
-            <Link to="/login" className="text-secondary hover:underline font-semibold">
+            <Link to="/login" className="text-secondary hover:text-primary font-semibold">
               Log In
             </Link>
           </p>
@@ -134,7 +135,7 @@ function Field({ label, id, children }: { label: string; id: string; children: R
   return (
     <div className="form-control w-full">
       <label htmlFor={id} className="label pt-0 pb-1">
-        <span className="label-text text-xs font-semibold text-gray-500">{label}</span>
+        <span className="label-text text-xs font-semibold text-neutral/60">{label}</span>
       </label>
       {children}
     </div>

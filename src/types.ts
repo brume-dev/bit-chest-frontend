@@ -37,6 +37,12 @@ export interface RegisterRequest {
   password: string;
 }
 
+export interface UpdateCurrentUserRequest {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+}
+
 export interface AuthResponse {
   user: User;
   token: string;

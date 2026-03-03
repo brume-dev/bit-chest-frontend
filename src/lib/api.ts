@@ -40,6 +40,18 @@ export async function getCurrentUser() {
   return r;
 }
 
+export async function updateCurrentUser(data: Types.UpdateCurrentUserRequest) {
+  const r = await fetcher<Types.AuthResponse>("/auth/me", {
+    method: "PATCH",
+    body: JSON.stringify(data)
+  });
+  if (r.token) {
+    localStorage.setItem("authToken", r.token);
+  }
+
+  return r;
+}
+
 export async function getTransactions() {
   const r = await fetcher<{ transactions: Types.Transaction[] }>("/transaction");
   return r.transactions;
