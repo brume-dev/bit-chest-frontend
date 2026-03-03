@@ -6,13 +6,13 @@ export function SidebarLogoutButton() {
   const navigate = useNavigate();
   const logoutMutation = useLogout();
 
-  const handleLogout = () => {
+  function handleLogout() {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
         navigate("/login");
       },
     });
-  };
+  }
 
   return (
     <button

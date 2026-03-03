@@ -1,8 +1,10 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { Field } from "../components/form-field";
 import { Logo } from "../components/logo";
 import { useLogin } from "../lib/hooks";
+import type { LoginRequest } from "../lib/types";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -10,16 +12,15 @@ export function LoginPage() {
   const loginMutation = useLogin();
 
   function loginAction(formData: FormData) {
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    loginMutation.mutate(
-      { email, password },
-      {
-        onSuccess: () => {
-          navigate("/");
-        },
+    const data: LoginRequest = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        navigate("/");
       },
-    );
+    });
   }
 
   const isPending = loginMutation.isPending;
@@ -91,18 +92,6 @@ export function LoginPage() {
           </p>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ─── Helper component ─────────────────────────────────────────────────────────
-function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
-  return (
-    <div className="form-control w-full">
-      <label htmlFor={id} className="label pt-0 pb-1">
-        <span className="label-text text-xs font-semibold text-gray-500">{label}</span>
-      </label>
-      {children}
     </div>
   );
 }

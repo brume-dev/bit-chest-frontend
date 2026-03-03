@@ -1,23 +1,19 @@
+import { MailIcon, PhoneIcon, UserIcon } from "lucide-react";
 import { useState } from "react";
-import { Mail, Phone, User } from "lucide-react";
-import { useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
+import { Field } from "../components/form-field";
 import { Sidebar } from "../components/sidebar";
-import * as Types from "../types"
-
-function getInitials(user: Types.User) {
-  return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-}
+import { UpdateProfileSection } from "../components/update-profile-section";
+import { getInitials } from "../lib/helpers";
+import { useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
+import type { UpdateCurrentUserRequest } from "../lib/types";
 
 export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
-
   const { data: user, isLoading } = useCurrentUser();
   const updateMutation = useUpdateCurrentUser();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data: Types.UpdateCurrentUserRequest = {
+  function updateProfileAction(formData: FormData) {
+    const data: UpdateCurrentUserRequest = {
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       phoneNumber: formData.get("phoneNumber") as string,
@@ -25,7 +21,7 @@ export function ProfilePage() {
     updateMutation.mutate(data, {
       onSuccess: () => setIsEditing(false),
     });
-  };
+  }
 
   if (isLoading) {
     return (
@@ -45,14 +41,10 @@ export function ProfilePage() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-secondary/10 border-2 border-secondary/20 flex items-center justify-center">
-                <span className="text-secondary font-bold text-lg">
-                  {user ? getInitials(user) : "—"}
-                </span>
+                <span className="text-secondary font-bold text-lg">{user ? getInitials(user) : "—"}</span>
               </div>
               <div>
-                <h1 className="text-lg font-bold text-neutral">
-                  {user ? `${user.firstName} ${user.lastName}` : "—"}
-                </h1>
+                <h1 className="text-lg font-bold text-neutral">{user ? `${user.firstName} ${user.lastName}` : "—"}</h1>
                 <p className="text-sm text-gray-400">{user?.email ?? "—"}</p>
               </div>
             </div>
@@ -76,10 +68,10 @@ export function ProfilePage() {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Section title="Personal Information">
+          <form action={updateProfileAction} className="space-y-4">
+            <UpdateProfileSection title="Personal Information">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="First Name" id="firstName" icon={<User size={14} />}>
+                <Field label="First Name" id="firstName" icon={<UserIcon size={14} />}>
                   <input
                     id="firstName"
                     name="firstName"
@@ -89,7 +81,7 @@ export function ProfilePage() {
                     className="input input-bordered w-full text-sm disabled:bg-base-200 disabled:text-neutral disabled:cursor-default"
                   />
                 </Field>
-                <Field label="Last Name" id="lastName" icon={<User size={14} />}>
+                <Field label="Last Name" id="lastName" icon={<UserIcon size={14} />}>
                   <input
                     id="lastName"
                     name="lastName"
@@ -100,11 +92,11 @@ export function ProfilePage() {
                   />
                 </Field>
               </div>
-            </Section>
+            </UpdateProfileSection>
 
-            <Section title="Contact Information">
+            <UpdateProfileSection title="Contact Information">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Email Address" id="email" icon={<Mail size={14} />}>
+                <Field label="Email Address" id="email" icon={<MailIcon size={14} />}>
                   <input
                     id="email"
                     name="email"
@@ -114,7 +106,7 @@ export function ProfilePage() {
                     className="input input-bordered w-full text-sm disabled:bg-base-200 disabled:text-neutral disabled:cursor-default"
                   />
                 </Field>
-                <Field label="Phone Number" id="phoneNumber" icon={<Phone size={14} />}>
+                <Field label="Phone Number" id="phoneNumber" icon={<PhoneIcon size={14} />}>
                   <input
                     id="phoneNumber"
                     name="phoneNumber"
@@ -125,12 +117,10 @@ export function ProfilePage() {
                   />
                 </Field>
               </div>
-            </Section>
+            </UpdateProfileSection>
 
             {updateMutation.error && (
-              <p className="text-error text-xs text-center font-medium">
-                {updateMutation.error.message}
-              </p>
+              <p className="text-error text-xs text-center font-medium">{updateMutation.error.message}</p>
             )}
 
             {isEditing && (
@@ -140,52 +130,13 @@ export function ProfilePage() {
                   disabled={updateMutation.isPending}
                   className="btn btn-secondary text-white border-none disabled:bg-gray-300 px-8"
                 >
-                  {updateMutation.isPending ? (
-                    <span className="loading loading-spinner loading-sm" />
-                  ) : (
-                    "Save Changes"
-                  )}
+                  {updateMutation.isPending ? <span className="loading loading-spinner loading-sm" /> : "Save Changes"}
                 </button>
               </div>
             )}
           </form>
         </div>
       </main>
-    </div>
-  );
-}
-
-// ─── Helper components ────────────────────────────────────────────────────────
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-base-100 rounded-2xl shadow-sm border border-base-200 p-6 space-y-4">
-      <h2 className="text-sm font-bold text-neutral">{title}</h2>
-      {children}
-    </div>
-  );
-}
-
-function Field({
-  label,
-  id,
-  icon,
-  children,
-}: {
-  label: string;
-  id: string;
-  icon?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="form-control w-full">
-      <label htmlFor={id} className="label pt-0 pb-1">
-        <span className="label-text text-xs font-semibold text-gray-500 flex items-center gap-1">
-          {icon}
-          {label}
-        </span>
-      </label>
-      {children}
     </div>
   );
 }

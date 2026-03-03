@@ -1,31 +1,30 @@
 import { Eye, EyeOff } from "lucide-react";
-import { type SubmitEvent, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { Field } from "../components/form-field.tsx";
 import { Logo } from "../components/logo.tsx";
 import { useRegister } from "../lib/hooks.ts";
+import type { RegisterRequest } from "../types.ts";
 
 export function RegisterPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const registerMutation = useRegister();
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
+  function registerAction(formData: FormData) {
+    const data: RegisterRequest = {
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       phoneNumber: formData.get("phone") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
     };
-
     registerMutation.mutate(data, {
       onSuccess: () => {
         navigate("/");
       },
     });
-  };
+  }
 
   const isPending = registerMutation.isPending;
   const errorMessage = registerMutation.error?.message;
@@ -38,7 +37,7 @@ export function RegisterPage() {
           <h2 className="text-xl font-semibold text-neutral mb-6">Create Your Account</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={registerAction} className="space-y-4">
           <div className="flex gap-3">
             <Field label="First Name" id="firstName">
               <input
@@ -104,9 +103,7 @@ export function RegisterPage() {
             </div>
           </Field>
 
-          {errorMessage && (
-            <p className="text-error text-xs text-center font-medium">{errorMessage}</p>
-          )}
+          {errorMessage && <p className="text-error text-xs text-center font-medium">{errorMessage}</p>}
 
           <button
             type="submit"
@@ -126,18 +123,6 @@ export function RegisterPage() {
           </p>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ─── Helper component ─────────────────────────────────────────────────────────
-function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
-  return (
-    <div className="form-control w-full">
-      <label htmlFor={id} className="label pt-0 pb-1">
-        <span className="label-text text-xs font-semibold text-neutral/60">{label}</span>
-      </label>
-      {children}
     </div>
   );
 }
