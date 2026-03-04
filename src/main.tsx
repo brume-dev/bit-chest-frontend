@@ -9,6 +9,7 @@ import { LoginPage } from "./pages/login-page";
 import { ProfilePage } from "./pages/profile-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
+import ClientsManagement from "./pages/ClientManagement";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ createRoot(document.querySelector("#root")!).render(
             <Route element={<SidebarLayout />}>
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/client" element={<ClientsManagement />} />
             </Route>
           </Route>
           <Route path="/login" element={<LoginPage />} />
