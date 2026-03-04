@@ -12,7 +12,7 @@ export interface Transaction {
   id: number;
   type: "buy" | "sell";
   amount: string; // DECIMAL comes back as string
-  date: string;   // was createdAt — backend sends "date"
+  date: string; // was createdAt — backend sends "date"
   crypto: {
     id: number;
     name: string;
@@ -29,7 +29,7 @@ export interface Crypto {
   id: number;
   name: string;
   abbreviation: string; // was "symbol"
-  prices: Price[];      // backend serializes the full prices collection
+  prices: Price[]; // backend serializes the full prices collection
 }
 
 export interface Price {
@@ -52,7 +52,7 @@ export interface RegisterRequest {
 }
 
 export interface UpdateCurrentUserRequest {
-  firstName?: string;  // was all required — PATCH, so all optional
+  firstName?: string; // was all required — PATCH, so all optional
   lastName?: string;
   phoneNumber?: string;
 }
@@ -99,4 +99,11 @@ export interface UpdateUserRequest {
   password?: string;
   phoneNumber?: string;
   role?: "user" | "admin";
+}
+
+export interface PortfolioRow {
+  crypto: Crypto;
+  holdings: number;
+  valueEur: number;
+  change24h: number;
 }

@@ -3,11 +3,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { AuthGuard } from "./layouts/auth-guard";
-import { IndexPage } from "./pages/index-page";
+import { SidebarLayout } from "./layouts/sidebar-layout";
+import { DashboardPage } from "./pages/dashboard-page";
 import { LoginPage } from "./pages/login-page";
+import { ProfilePage } from "./pages/profile-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
-import { ProfilePage } from "./pages/profile-page";
 
 const queryClient = new QueryClient();
 
@@ -18,8 +19,10 @@ createRoot(document.querySelector("#root")!).render(
       <BrowserRouter>
         <Routes>
           <Route element={<AuthGuard />}>
-            <Route path="/" element={<IndexPage />} />
-            <Route path="/profile" element={<ProfilePage/>} />
+            <Route element={<SidebarLayout />}>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/" element={<DashboardPage />} />
+            </Route>
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
