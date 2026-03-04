@@ -1,4 +1,4 @@
-import type * as Types from "../types";
+import type * as Types from "../lib/types";
 
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   const token = localStorage.getItem("authToken");

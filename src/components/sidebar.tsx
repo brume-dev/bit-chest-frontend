@@ -23,54 +23,106 @@ export function Sidebar() {
   const navItems = user.roles.includes("ROLE_ADMIN") ? adminNavItems : userNavItems;
 
   return (
-    <div className="flex flex-col h-screen w-64 bg-base-100 border-r border-neutral/20">
-      {/* Logo Section */}
-      <Logo />
+    <>
+      {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
+      <div className="hidden md:flex flex-col h-screen w-64 bg-base-100 border-r border-neutral/20 sticky top-0">
+        <Logo />
 
-      {/* Navigation Links */}
-      <nav className="flex-1 px-4">
-        <ul className="menu menu-md w-full gap-1">
-          {navItems.map((item) => (
-            <li key={item.path}>
+        <nav className="flex-1 px-4">
+          <ul className="menu menu-md w-full gap-1">
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-4 py-3 ${location.pathname === item.path ? "active" : ""}`}
+                >
+                  {item.icon}
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="p-4 border-t border-neutral/20">
+          <div className="flex items-center justify-between gap-2">
+            <Link
+              to="/profile"
+              className="flex items-center gap-3 flex-1 min-w-0 p-2 rounded-xl hover:bg-base-200 transition-colors group"
+            >
+              <div className="avatar avatar-placeholder shrink-0">
+                <div className="bg-primary text-primary-content rounded-full w-9 text-xs font-bold">
+                  <span>
+                    {user.firstName[0].toUpperCase()}
+                    {user.lastName[0].toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-sm text-neutral truncate leading-tight">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-xs text-neutral/40 truncate leading-tight group-hover:text-neutral/60 transition-colors">
+                  View profile
+                </p>
+              </div>
+            </Link>
+            <SidebarLogoutButton />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile bottom bar ───────────────────────────────────────────── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-base-100 border-t border-neutral/20">
+        <nav className="flex items-center justify-around px-2 h-16">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
               <Link
+                key={item.path}
                 to={item.path}
-                className={`flex items-center gap-4 py-3 ${location.pathname === item.path ? "active" : ""}`}
+                className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${
+                  isActive ? "text-secondary" : "text-neutral/40 hover:text-neutral/60"
+                }`}
               >
-                {item.icon}
-                <span className="font-medium">{item.name}</span>
+                <span className={`transition-transform duration-150 ${isActive ? "scale-110" : "scale-100"}`}>
+                  {item.icon}
+                </span>
+                <span className={`text-[10px] font-semibold leading-none ${isActive ? "text-secondary" : ""}`}>
+                  {item.name}
+                </span>
               </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+            );
+          })}
 
-      {/* User Profile & Logout area */}
-      <div className="p-4 border-t border-neutral/20">
-        <div className="flex items-center justify-between gap-2">
           <Link
             to="/profile"
-            className="flex items-center gap-3 flex-1 min-w-0 p-2 rounded-xl hover:bg-base-200 transition-colors group"
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${
+              location.pathname === "/profile" ? "text-secondary" : "text-neutral/40 hover:text-neutral/60"
+            }`}
           >
-            <div className="avatar avatar-placeholder shrink-0">
-              <div className="bg-primary text-primary-content rounded-full w-9 text-xs font-bold">
+            <div className="avatar avatar-placeholder">
+              <div
+                className={`rounded-full w-6 text-[9px] font-bold transition-colors ${
+                  location.pathname === "/profile" ? "bg-secondary text-white" : "bg-primary text-primary-content"
+                }`}
+              >
                 <span>
                   {user.firstName[0].toUpperCase()}
                   {user.lastName[0].toUpperCase()}
                 </span>
               </div>
             </div>
-            <div className="min-w-0">
-              <p className="font-semibold text-sm text-neutral truncate leading-tight">
-                {user.firstName} {user.lastName}
-              </p>
-              <p className="text-xs text-neutral/40 truncate leading-tight group-hover:text-neutral/60 transition-colors">
-                View profile
-              </p>
-            </div>
+            <span
+              className={`text-[10px] font-semibold leading-none ${
+                location.pathname === "/profile" ? "text-secondary" : ""
+              }`}
+            >
+              Profile
+            </span>
           </Link>
-          <SidebarLogoutButton />
-        </div>
+        </nav>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type * as Types from "../types";
+import type * as Types from "../lib/types";
 import * as Api from "./api";
 
 export function useLogin() {
@@ -123,8 +123,7 @@ export function useCreateUser() {
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Types.UpdateUserRequest }) =>
-      Api.updateUser(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Types.UpdateUserRequest }) => Api.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
