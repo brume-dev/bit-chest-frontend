@@ -2,14 +2,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
+import { AdminGuard } from "./layouts/admin-guard";
 import { AuthGuard } from "./layouts/auth-guard";
 import { SidebarLayout } from "./layouts/sidebar-layout";
-import { DashboardPage } from "./pages/dashboard-page";
+import { AdminDashboardPage } from "./pages/admin-dashboard-page";
+import ClientsManagement from "./pages/ClientManagement";
+import { IndexPage } from "./pages/index-page";
 import { LoginPage } from "./pages/login-page";
 import { ProfilePage } from "./pages/profile-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
-import ClientsManagement from "./pages/ClientManagement";
 
 const queryClient = new QueryClient();
 
@@ -21,9 +23,12 @@ createRoot(document.querySelector("#root")!).render(
         <Routes>
           <Route element={<AuthGuard />}>
             <Route element={<SidebarLayout />}>
+              <Route path="/" element={<IndexPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/clients" element={<ClientsManagement />} />
+              <Route element={<AdminGuard />}>
+                <Route path="/clients" element={<ClientsManagement />} />
+                <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+              </Route>
             </Route>
           </Route>
           <Route path="/login" element={<LoginPage />} />
