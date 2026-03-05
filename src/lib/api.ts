@@ -115,3 +115,11 @@ export async function deleteUser(id: number) {
   });
   return r;
 }
+
+export async function changePassword(data: { currentPassword: string; newPassword: string }) {
+  const r = await fetcher<{ message: string }>("/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return r;
+}

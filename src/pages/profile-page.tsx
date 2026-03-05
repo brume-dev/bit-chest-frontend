@@ -1,15 +1,23 @@
-import { MailIcon, PhoneIcon, UserIcon } from "lucide-react";
+import { KeyRoundIcon, MailIcon, PhoneIcon, UserIcon } from "lucide-react";
 import { useState } from "react";
 import { Field } from "../components/form-field";
 import { UpdateProfileSection } from "../components/update-profile-section";
 import { getInitials } from "../lib/helpers";
-import { useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
+import { useChangePassword, useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
 import type { UpdateCurrentUserRequest } from "../lib/types";
 
 export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+
   const { data: user, isLoading } = useCurrentUser();
   const updateMutation = useUpdateCurrentUser();
+  const changePasswordMutation = useChangePassword();
 
   function updateProfileAction(formData: FormData) {
     const data: UpdateCurrentUserRequest = {
@@ -20,6 +28,32 @@ export function ProfilePage() {
     updateMutation.mutate(data, {
       onSuccess: () => setIsEditing(false),
     });
+  }
+
+  function handleChangePassword() {
+    setPasswordError("");
+
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      setPasswordError("All password fields are required.");
+      return;
+    }
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError("New password must be at least 8 characters.");
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+
+    changePasswordMutation.mutate(
+      { currentPassword: passwordForm.currentPassword, newPassword: passwordForm.newPassword },
+      {
+        onSuccess: () => {
+          setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+        },
+      },
+    );
   }
 
   if (isLoading) {
@@ -133,6 +167,87 @@ export function ProfilePage() {
             </div>
           )}
         </form>
+
+        {/* Change Password — separate from the profile form */}
+        <div className="mt-4">
+          <UpdateProfileSection title="Change Password">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Current Password" id="currentPassword" icon={<KeyRoundIcon size={14} />}>
+                <input
+                  id="currentPassword"
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => setPasswordForm((f) => ({ ...f, currentPassword: e.target.value }))}
+                  placeholder="••••••••"
+                  className="input input-bordered w-full text-sm"
+                />
+              </Field>
+
+              <div />
+
+              <Field label="New Password" id="newPassword" icon={<KeyRoundIcon size={14} />}>
+                <input
+                  id="newPassword"
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
+                  placeholder="••••••••"
+                  className={`input input-bordered w-full text-sm ${
+                    passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
+                      ? "input-error"
+                      : ""
+                  }`}
+                />
+              </Field>
+
+              <Field label="Confirm New Password" id="confirmPassword" icon={<KeyRoundIcon size={14} />}>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                  placeholder="••••••••"
+                  className={`input input-bordered w-full text-sm ${
+                    passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
+                      ? "input-error"
+                      : ""
+                  }`}
+                />
+              </Field>
+            </div>
+
+            {/* Inline mismatch hint */}
+            {passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword && (
+              <p className="text-error text-xs mt-2">Passwords do not match.</p>
+            )}
+
+            {/* Validation / API errors */}
+            {(passwordError || changePasswordMutation.error) && (
+              <p className="text-error text-xs mt-2 font-medium">
+                {passwordError || changePasswordMutation.error?.message}
+              </p>
+            )}
+
+            {changePasswordMutation.isSuccess && (
+              <p className="text-success text-xs mt-2 font-medium">Password updated successfully.</p>
+            )}
+
+            <div className="flex justify-end pt-4">
+              <button
+                type="button"
+                onClick={handleChangePassword}
+                disabled={changePasswordMutation.isPending}
+                className="btn btn-secondary text-white border-none disabled:bg-gray-300 w-full sm:w-auto px-8"
+              >
+                {changePasswordMutation.isPending ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  "Update Password"
+                )}
+              </button>
+            </div>
+          </UpdateProfileSection>
+        </div>
       </div>
     </div>
   );

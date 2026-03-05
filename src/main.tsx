@@ -23,7 +23,7 @@ createRoot(document.querySelector("#root")!).render(
             <Route element={<SidebarLayout />}>
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/" element={<DashboardPage />} />
-              <Route path="/client" element={<ClientsManagement />} />
+              <Route path="/clients" element={<ClientsManagement />} />
             </Route>
           </Route>
           <Route path="/login" element={<LoginPage />} />

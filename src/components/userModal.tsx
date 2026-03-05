@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <> */
-import { Eye, EyeOff, Lock, Mail, Phone, ShieldCheck, User, X } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Phone, RefreshCw, ShieldCheck, User, X } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useCreateUser, useUpdateUser } from "../lib/hooks";
@@ -27,9 +27,18 @@ function Field({ label, id, children }: { label: string; id: string; children: R
   );
 }
 
+function generatePassword(length = 12): string {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from(crypto.getRandomValues(new Uint8Array(length)))
+    .map((n) => chars[n % chars.length])
+    .join("");
+}
+
 export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: UserModalProps) {
   const isEdit = mode === "edit";
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [copied, setCopied] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const createMutation = useCreateUser();
@@ -43,8 +52,24 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
     createMutation.reset();
     updateMutation.reset();
     setShowPassword(false);
+    setPassword("");
+    setCopied(false);
     if (!isEdit) formRef.current?.reset();
   }, [isOpen, createMutation.reset]);
+
+  function handleGenerate() {
+    const newPassword = generatePassword(12);
+    setPassword(newPassword);
+    setShowPassword(true);
+    setCopied(false);
+  }
+
+  function handleCopy() {
+    if (!password) return;
+    navigator.clipboard.writeText(password);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,7 +79,6 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
     const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
     const phoneNumber = formData.get("phoneNumber") as string;
-    const password = formData.get("password") as string;
     const role = formData.get("roles") as "user" | "admin";
 
     if (isEdit && user) {
@@ -186,6 +210,7 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
 
           {!isEdit && (
             <Field label="Password" id="password">
+              {/* Input row */}
               <div className="relative">
                 <label className="input input-bordered flex items-center gap-2 pr-10">
                   <Lock className="w-4 h-4 text-base-content/40 shrink-0" />
@@ -195,6 +220,8 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
                     name="password"
                     placeholder="••••••••"
                     className="grow text-sm"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     minLength={8}
                     required
                   />
@@ -206,6 +233,32 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
                 >
                   {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
                 </button>
+              </div>
+
+              {/* Generator row */}
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  className="btn btn-xs btn-outline border-base-300 text-base-content/60 hover:border-secondary hover:text-secondary gap-1.5 rounded-full"
+                >
+                  <RefreshCw size={11} />
+                  Generate
+                </button>
+
+                {password && (
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className={`btn btn-xs rounded-full transition-all ${
+                      copied
+                        ? "btn-success text-white border-none"
+                        : "btn-outline border-base-300 text-base-content/60 hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    {copied ? "✓ Copied!" : "Copy"}
+                  </button>
+                )}
               </div>
             </Field>
           )}
