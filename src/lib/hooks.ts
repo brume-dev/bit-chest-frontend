@@ -139,3 +139,9 @@ export function useDeleteUser() {
     },
   });
 }
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: Api.changePassword,
+  });
+}
