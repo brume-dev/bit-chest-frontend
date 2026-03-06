@@ -12,6 +12,7 @@ import { LoginPage } from "./pages/login-page";
 import { ProfilePage } from "./pages/profile-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
+import { PortfolioPage } from "./pages/portfolio-page";
 import { CryptoPage } from "./pages/crypto-page";
 import { TradesPage } from "./pages/trades-page";
 
@@ -29,6 +30,7 @@ createRoot(document.querySelector("#root")!).render(
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/trade" element={<TradesPage />} />
               <Route path="/cryptos" element={<CryptoPage />} />
+              <Route path="/portfolio" element={<PortfolioPage />} />
               <Route element={<AdminGuard />}>
                 <Route path="/clients" element={<ClientsManagement />} />
                 <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
