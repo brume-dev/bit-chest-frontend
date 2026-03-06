@@ -123,3 +123,8 @@ export async function changePassword(data: { currentPassword: string; newPasswor
   });
   return r;
 }
+
+export async function getAllTransactions() {
+  const r = await fetcher<{ transactions: Types.Transaction[] }>("/transaction/all");
+  return r.transactions;
+}

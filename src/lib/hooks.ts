@@ -145,3 +145,10 @@ export function useChangePassword() {
     mutationFn: Api.changePassword,
   });
 }
+
+export function useAllTransactions() {
+  return useQuery({
+    queryKey: ["transactions", "all"],
+    queryFn: Api.getAllTransactions,
+  });
+}

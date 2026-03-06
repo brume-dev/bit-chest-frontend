@@ -5,7 +5,7 @@ import { ChangeCell } from "../components/dashboard-change-cell";
 import { CryptoIcon } from "../components/dashboard-crypto-icon";
 import { StatCard } from "../components/dashboard-stat-card";
 import { buildGrowthData, buildTopCryptos, formatEur, get24hVolume, txEurValue } from "../lib/helpers";
-import { useCryptos, useTransactions, useUsers } from "../lib/hooks";
+import { useAllTransactions, useCryptos, useUsers } from "../lib/hooks";
 
 // ── Error banner ──────────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ function CardSkeleton({ className = "" }: { className?: string }) {
 export function AdminDashboardPage() {
   const { data: users, isLoading: usersLoading, isError: usersError, error: usersErrorMsg } = useUsers();
 
-  const { data: transactions, isLoading: txLoading, isError: txError, error: txErrorMsg } = useTransactions();
+  const { data: transactions, isLoading: txLoading, isError: txError, error: txErrorMsg } = useAllTransactions();
 
   const { data: cryptos, isLoading: cryptosLoading, isError: cryptosError, error: cryptosErrorMsg } = useCryptos();
 
