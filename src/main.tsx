@@ -12,6 +12,7 @@ import { LoginPage } from "./pages/login-page";
 import { ProfilePage } from "./pages/profile-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
+import { TradesPage } from "./pages/trades-page";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ createRoot(document.querySelector("#root")!).render(
             <Route element={<SidebarLayout />}>
               <Route path="/" element={<IndexPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/trade" element={<TradesPage />} />
               <Route element={<AdminGuard />}>
                 <Route path="/clients" element={<ClientsManagement />} />
                 <Route path="/admin-dashboard" element={<AdminDashboardPage />} />

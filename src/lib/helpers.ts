@@ -17,7 +17,7 @@ export function formatEur(value: number) {
 }
 
 export function latestPrice(crypto: Crypto): number {
-	if (!crypto.prices.length) return 0;
+  if (!crypto.prices?.length) return 0;
 	const sorted = [...crypto.prices].sort(
 		(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
 	);
@@ -145,4 +145,14 @@ export function buildTopCryptos(
 		.filter((r) => r.volume > 0)
 		.sort((a, b) => b.volume - a.volume)
 		.slice(0, 5);
+}
+
+export function buildHoldings(transactions: Transaction[]): Record<number, number> {
+  const map: Record<number, number> = {};
+  for (const tx of transactions) {
+    const id = tx.crypto.id;
+    const amount = parseFloat(tx.amount);
+    map[id] = (map[id] ?? 0) + (tx.type === "buy" ? amount : -amount);
+  }
+  return map;
 }
