@@ -43,7 +43,9 @@ export function TradesPage() {
   }, [selectedCrypto]);
 
   const amount = Number.parseFloat(amountStr) || 0;
-  const cryptoQty = currentPrice > 0 && amount > 0 ? amount / currentPrice : 0;
+  // Buy: user enters USD → compute crypto qty. Sell: user enters crypto qty → compute USD value
+  const cryptoQty = tab === "buy" ? (currentPrice > 0 && amount > 0 ? amount / currentPrice : 0) : amount;
+  const usdValue = tab === "sell" ? (currentPrice > 0 && amount > 0 ? amount * currentPrice : 0) : amount;
   const usdBalance = Number.parseFloat(user?.balance ?? "0");
   const selectedHolding = selectedCryptoId > 0 ? (holdings[selectedCryptoId] ?? 0) : 0;
   const selectedHoldingValue = currentPrice > 0 ? selectedHolding * currentPrice : 0;
@@ -57,7 +59,7 @@ export function TradesPage() {
       cryptoName: selectedCrypto.name,
       cryptoAbbreviation: selectedCrypto.abbreviation.toUpperCase(),
       currentPrice,
-      amountUsd: amount,
+      amountUsd: usdValue,
       cryptoQty,
     });
     setConfirmed(false);
@@ -69,7 +71,7 @@ export function TradesPage() {
       {
         cryptoId: preview.cryptoId,
         priceId: preview.priceId,
-        amount: preview.amountUsd,
+        amount: preview.cryptoQty,
         type: preview.tab,
       },
       {
@@ -162,7 +164,9 @@ export function TradesPage() {
               <div className="form-control w-full">
                 <label htmlFor="amount" className="label pt-0 pb-1">
                   <span className="label-text text-xs font-semibold text-gray-500">
-                    Amount to {tab === "buy" ? "Spend" : "Sell"} (USD)
+                    {tab === "buy"
+                      ? "Amount to Spend (USD)"
+                      : `Amount to Sell (${selectedCrypto?.abbreviation.toUpperCase() ?? "crypto"})`}
                   </span>
                 </label>
                 <div className="relative">
@@ -180,7 +184,7 @@ export function TradesPage() {
                     className="input input-bordered w-full pr-14 text-sm tabular-nums"
                   />
                   <span className="absolute right-4 inset-y-0 flex items-center text-xs font-semibold text-gray-400 pointer-events-none">
-                    USD
+                    {tab === "sell" && selectedCrypto ? selectedCrypto.abbreviation.toUpperCase() : "USD"}
                   </span>
                 </div>
               </div>
@@ -203,9 +207,11 @@ export function TradesPage() {
                       </div>
                       {amount > 0 && (
                         <div className="flex justify-between font-bold text-neutral border-t border-slate-200 pt-2">
-                          <span>You will {tab === "buy" ? "receive" : "sell"}</span>
+                          <span>{tab === "buy" ? "You will receive" : "You will get"}</span>
                           <span className="tabular-nums">
-                            ≈ {cryptoQty.toFixed(6)} {selectedCrypto?.abbreviation.toUpperCase()}
+                            {tab === "buy"
+                              ? `≈ ${cryptoQty.toFixed(6)} ${selectedCrypto?.abbreviation.toUpperCase()}`
+                              : usdValue.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                           </span>
                         </div>
                       )}
@@ -236,7 +242,7 @@ export function TradesPage() {
         </div>
 
         {/* ── Right: Wallet + Preview ── */}
-        <div className="w-full lg:w-72 xl:w-80 flex-shrink-0 space-y-4">
+        <div className="w-full lg:w-72 xl:w-80 shrink-0 space-y-4">
           {/* Wallet card */}
           <div className="bg-base-100 rounded-2xl shadow-sm border border-slate-100 p-5">
             <h2 className="text-sm font-bold text-neutral mb-3 flex items-center gap-2">
@@ -245,7 +251,7 @@ export function TradesPage() {
             </h2>
             <div className="space-y-2">
               <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                   <CircleDollarSign size={16} className="text-green-600" />
                 </div>
                 <div>
@@ -258,7 +264,7 @@ export function TradesPage() {
 
               {selectedCrypto && (
                 <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
                     <Bitcoin size={16} className="text-orange-500" />
                   </div>
                   <div>
@@ -318,11 +324,15 @@ export function TradesPage() {
                         {preview.tab}
                       </span>{" "}
                       <span className="font-semibold text-neutral">
-                        {preview.amountUsd.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+                        {preview.tab === "buy"
+                          ? preview.amountUsd.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                          : `${preview.cryptoQty.toFixed(6)} ${preview.cryptoAbbreviation}`}
                       </span>{" "}
-                      and {preview.tab === "buy" ? "receive approximately" : "sell approximately"}{" "}
+                      and {preview.tab === "buy" ? "receive approximately" : "receive approximately"}{" "}
                       <span className="font-semibold text-neutral">
-                        {preview.cryptoQty.toFixed(6)} {preview.cryptoAbbreviation}
+                        {preview.tab === "buy"
+                          ? `${preview.cryptoQty.toFixed(6)} ${preview.cryptoAbbreviation}`
+                          : preview.amountUsd.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                       </span>
                       .
                     </p>
@@ -340,8 +350,14 @@ export function TradesPage() {
                           {preview.currentPrice.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                         </span>
                       </div>
+                      <div className="flex justify-between text-gray-500">
+                        <span>{preview.tab === "buy" ? "Quantity" : "Selling"}</span>
+                        <span className="tabular-nums">
+                          {preview.cryptoQty.toFixed(6)} {preview.cryptoAbbreviation}
+                        </span>
+                      </div>
                       <div className="flex justify-between font-bold text-neutral border-t border-slate-200 pt-1.5">
-                        <span>Total</span>
+                        <span>{preview.tab === "buy" ? "You pay" : "You receive"}</span>
                         <span className="tabular-nums">
                           {preview.amountUsd.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                         </span>
