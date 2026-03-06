@@ -9,9 +9,9 @@ export function Sidebar() {
   const user = useOutletContext<User>();
 
   const userNavItems = [
-    { name: "Dashboard", path: "/", icon: <LayoutDashboardIcon size={20} /> },
-    { name: "Trade", path: "/trade", icon: <ArrowLeftRightIcon size={20} /> },
     { name: "Portfolio", path: "/portfolio", icon: <BriefcaseIcon size={20} /> },
+    { name: "Trade", path: "/trade", icon: <ArrowLeftRightIcon size={20} /> },
+    { name: "Cryptos", path: "/cryptos", icon: <BriefcaseIcon size={20} /> },
   ];
 
   const adminNavItems = [

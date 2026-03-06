@@ -13,35 +13,34 @@ import { ProfilePage } from "./pages/profile-page";
 import { RegisterPage } from "./pages/register-page";
 import "./index.css";
 import { PortfolioPage } from "./pages/portfolio-page";
+import { CryptoPage } from "./pages/crypto-page";
 import { TradesPage } from "./pages/trades-page";
 
 const queryClient = new QueryClient();
 
 // biome-ignore lint/style/noNonNullAssertion: <>
 createRoot(document.querySelector("#root")!).render(
-	<StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<BrowserRouter>
-				<Routes>
-					<Route element={<AuthGuard />}>
-						<Route element={<SidebarLayout />}>
-							<Route path="/" element={<IndexPage />} />
-							<Route path="/portfolio" element={<PortfolioPage />} />
-							<Route path="/profile" element={<ProfilePage />} />
-							<Route path="/trade" element={<TradesPage />} />
-							<Route element={<AdminGuard />}>
-								<Route path="/clients" element={<ClientsManagement />} />
-								<Route
-									path="/admin-dashboard"
-									element={<AdminDashboardPage />}
-								/>
-							</Route>
-						</Route>
-					</Route>
-					<Route path="/login" element={<LoginPage />} />
-					<Route path="/register" element={<RegisterPage />} />
-				</Routes>
-			</BrowserRouter>
-		</QueryClientProvider>
-	</StrictMode>,
+  <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AuthGuard />}>
+            <Route element={<SidebarLayout />}>
+              <Route path="/" element={<IndexPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/trade" element={<TradesPage />} />
+              <Route path="/cryptos" element={<CryptoPage />} />
+              <Route path="/portfolio" element={<PortfolioPage />} />
+              <Route element={<AdminGuard />}>
+                <Route path="/clients" element={<ClientsManagement />} />
+                <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+              </Route>
+            </Route>
+          </Route>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </StrictMode>,
 );
