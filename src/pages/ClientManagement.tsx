@@ -7,6 +7,7 @@ import type { User } from "../lib/types";
 
 type ModalState = { isOpen: false } | { isOpen: true; mode: "create" } | { isOpen: true; mode: "edit"; user: User };
 
+// Display edit and delete action buttons for user
 function ActionButtons({
   onEdit,
   onDelete,
@@ -35,6 +36,7 @@ function ActionButtons({
   );
 }
 
+// Display pagination controls for user list
 function Pagination({
   currentPage,
   totalPages,
@@ -44,6 +46,7 @@ function Pagination({
   totalPages: number;
   onChange: (page: number) => void;
 }) {
+  // Skip pagination for single page
   if (totalPages <= 1) return null;
   return (
     <div className="flex justify-center items-center mt-8 gap-1">
@@ -70,6 +73,7 @@ function Pagination({
 
 const ITEMS_PER_PAGE = 8;
 
+// Client management and user administration page
 export default function ClientsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,20 +82,28 @@ export default function ClientsManagement() {
   const { data: users = [], isLoading, isError, error } = useUsers();
   const deleteMutation = useDeleteUser();
 
+  // Filter users by search term in name/email
   const filteredUsers = users.filter(({ firstName = "", lastName = "", email }) => {
+    // Case-insensitive search across name and email
     const search = searchTerm.toLowerCase();
     return `${firstName} ${lastName}`.toLowerCase().includes(search) || email.toLowerCase().includes(search);
   });
 
+  // Calculate total pages for pagination
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  // Get current page slice of users
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
+  // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    // Reset to first page on search
     setCurrentPage(1);
   };
 
+  // Handle user delete with confirmation
   const handleDelete = (id: string) => {
+    // Prompt user for confirmation
     if (window.confirm("Are you sure you want to delete this user?")) {
       deleteMutation.mutate(id);
     }
@@ -217,7 +229,7 @@ export default function ClientsManagement() {
         mode={modal.isOpen ? modal.mode : "create"}
         user={modal.isOpen && modal.mode === "edit" ? modal.user : null}
         onClose={() => setModal({ isOpen: false })}
-        onSuccess={() => {}}
+        onSuccess={() => { }}
       />
     </>
   );

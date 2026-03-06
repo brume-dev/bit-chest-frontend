@@ -6,6 +6,7 @@ import { getInitials } from "../lib/helpers";
 import { useChangePassword, useCurrentUser, useUpdateCurrentUser } from "../lib/hooks";
 import type { UpdateCurrentUserRequest } from "../lib/types";
 
+// User profile page with settings and password change
 export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
@@ -19,6 +20,7 @@ export function ProfilePage() {
   const updateMutation = useUpdateCurrentUser();
   const changePasswordMutation = useChangePassword();
 
+  // Handle profile form submission
   function updateProfileAction(formData: FormData) {
     const data: UpdateCurrentUserRequest = {
       firstName: formData.get("firstName") as string,
@@ -30,17 +32,21 @@ export function ProfilePage() {
     });
   }
 
+  // Validate and submit password change
   function handleChangePassword() {
     setPasswordError("");
 
+    // Check all required fields are filled
     if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
       setPasswordError("All password fields are required.");
       return;
     }
+    // Validate new password length
     if (passwordForm.newPassword.length < 8) {
       setPasswordError("New password must be at least 8 characters.");
       return;
     }
+    // Check passwords match
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setPasswordError("New passwords do not match.");
       return;
@@ -56,6 +62,7 @@ export function ProfilePage() {
     );
   }
 
+  // Show loading while fetching user
   if (isLoading) {
     return (
       <div className="bg-slate-50 flex items-center justify-center">
@@ -192,11 +199,10 @@ export function ProfilePage() {
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
                   placeholder="••••••••"
-                  className={`input input-bordered w-full text-sm ${
-                    passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
+                  className={`input input-bordered w-full text-sm ${passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
                       ? "input-error"
                       : ""
-                  }`}
+                    }`}
                 />
               </Field>
 
@@ -207,11 +213,10 @@ export function ProfilePage() {
                   value={passwordForm.confirmPassword}
                   onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
                   placeholder="••••••••"
-                  className={`input input-bordered w-full text-sm ${
-                    passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
+                  className={`input input-bordered w-full text-sm ${passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
                       ? "input-error"
                       : ""
-                  }`}
+                    }`}
                 />
               </Field>
             </div>

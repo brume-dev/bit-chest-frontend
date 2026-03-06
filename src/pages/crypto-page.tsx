@@ -18,20 +18,25 @@ const PERIOD_MS: Record<string, number> = {
  * Build chart-ready price history from crypto.prices, filtered to the period.
  * Sorts chronologically and formats the label depending on the period.
  */
+// Build chart data filtered by time period
 function buildPriceHistory(crypto: Crypto, period: string): { time: string; price: number }[] {
+  // Return empty if no prices available
   if (!crypto.prices?.length) return [];
 
   const now = Date.now();
   const cutoff = now - (PERIOD_MS[period] ?? PERIOD_MS["7D"]);
 
+  // Filter prices within period range
   const filtered = crypto.prices
     .map((p) => ({ ts: new Date(p.date).getTime(), value: parseFloat(p.value) }))
-    .filter((p) => p.ts >= cutoff)
-    .sort((a, b) => a.ts - b.ts);
+    .filter((p) => p.ts >= cutoff) // Within period
+    .sort((a, b) => a.ts - b.ts); // Sort chronologically
 
+  // Format each price point with time label
   return filtered.map(({ ts, value }) => {
     const d = new Date(ts);
     let time: string;
+    // Format time label based on selected period
     if (period === "1D") {
       time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
     } else if (period === "7D") {
@@ -49,12 +54,17 @@ function buildPriceHistory(crypto: Crypto, period: string): { time: string; pric
  * Build volume distribution chart data from top cryptos' price history.
  * Uses each crypto's last 7 price points as the trend line.
  */
+// Build volume distribution from top cryptos
 function buildVolumeChartData(topCryptos: { crypto: Crypto; volume: number }[]): Record<string, string | number>[] {
   const allPoints: { ts: number; label: string; cryptoId: number; value: number }[] = [];
 
+  // Collect all price points for top cryptos
   for (const { crypto } of topCryptos) {
+    // Skip if no prices available
     if (!crypto.prices?.length) continue;
+    // Get last 7 price points for trend
     const sorted = [...crypto.prices].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(-7);
+    // Iterate over sorted prices
     for (const p of sorted) {
       const ts = new Date(p.date).getTime();
       allPoints.push({
@@ -67,15 +77,21 @@ function buildVolumeChartData(topCryptos: { crypto: Crypto; volume: number }[]):
   }
 
   const byLabel: Record<string, Record<string, number>> = {};
+  // Group points by label (date)
   for (const pt of allPoints) {
+    // Find matching crypto from top list
     const crypto = topCryptos.find((r) => r.crypto.id === pt.cryptoId)?.crypto;
+    // Skip if crypto not found
     if (!crypto) continue;
+    // Initialize label bucket if new
     if (!byLabel[pt.label]) byLabel[pt.label] = {};
     byLabel[pt.label][crypto.name] = pt.value;
   }
 
+  // Convert to array and sort chronologically
   return Object.entries(byLabel)
     .sort(([a], [b]) => {
+      // Find timestamps for sorting comparison
       const tsA = allPoints.find((p) => p.label === a)?.ts ?? 0;
       const tsB = allPoints.find((p) => p.label === b)?.ts ?? 0;
       return tsA - tsB;
@@ -85,10 +101,12 @@ function buildVolumeChartData(topCryptos: { crypto: Crypto; volume: number }[]):
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
+// Display crypto stat card with name and change
 function StatCard({ crypto }: { crypto: Crypto }) {
   const price = latestPrice(crypto);
   const prev = price24hAgo(crypto);
   const change = prev > 0 ? ((price - prev) / prev) * 100 : 0;
+  // Determine if change is positive
   const isPositive = change >= 0;
 
   return (
@@ -108,7 +126,9 @@ function StatCard({ crypto }: { crypto: Crypto }) {
   );
 }
 
+// Format percentage change display
 function ChangeCell({ value }: { value: number }) {
+  // Determine if positive or negative
   const isPositive = value >= 0;
   return (
     <span className={`font-semibold ${isPositive ? "text-success" : "text-error"}`}>
@@ -118,14 +138,18 @@ function ChangeCell({ value }: { value: number }) {
   );
 }
 
+// Format number as currency with EUR suffix
 function formatVolume(n: number) {
+  // Convert to appropriate magnitude
   if (n >= 1e12) return `${(n / 1e12).toFixed(2)}T €`;
   if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B €`;
   if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M €`;
   return formatEur(n);
 }
 
+// Display tooltip for chart with value
 function PriceTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) {
+  // Hide tooltip if not active or no data
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-base-100 border border-base-200 rounded-xl shadow-lg px-3 py-2 text-xs">
@@ -139,6 +163,7 @@ function PriceTooltip({ active, payload, label }: { active?: boolean; payload?: 
 
 const COLORS = ["#35a7ff", "#38618c", "#01ff19", "#ff5964", "#f59e0b"];
 
+// Crypto monitoring and analytics page
 export function CryptoPage() {
   const { data: cryptos = [], isLoading: loadingCryptos } = useCryptos();
   const { data: transactions = [], isLoading: loadingTx } = useAllTransactions();
@@ -159,6 +184,7 @@ export function CryptoPage() {
   // Volume distribution chart built from real price history of top cryptos
   const volumeChartData = useMemo(() => buildVolumeChartData(topCryptos), [topCryptos]);
 
+  // Filter cryptos by search term
   const filtered = cryptos.filter(
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) || c.symbol?.toLowerCase().includes(search.toLowerCase()),
@@ -314,34 +340,34 @@ export function CryptoPage() {
             <tbody>
               {isLoading
                 ? [1, 2, 3, 4, 5].map((i) => (
-                    <tr key={i}>
-                      <td colSpan={5}>
-                        <div className="skeleton h-8 w-full rounded-lg" />
-                      </td>
-                    </tr>
-                  ))
+                  <tr key={i}>
+                    <td colSpan={5}>
+                      <div className="skeleton h-8 w-full rounded-lg" />
+                    </td>
+                  </tr>
+                ))
                 : filtered.map((c, idx) => {
-                    const price = latestPrice(c);
-                    const prev = price24hAgo(c);
-                    const change = prev > 0 ? ((price - prev) / prev) * 100 : 0;
-                    const txVolume = topCryptos.find((r) => r.crypto.id === c.id)?.volume ?? 0;
+                  const price = latestPrice(c);
+                  const prev = price24hAgo(c);
+                  const change = prev > 0 ? ((price - prev) / prev) * 100 : 0;
+                  const txVolume = topCryptos.find((r) => r.crypto.id === c.id)?.volume ?? 0;
 
-                    return (
-                      <tr key={c.id} className="border-b border-base-100 hover:bg-slate-50 transition-colors">
-                        <td className="text-gray-400 text-sm py-3">{idx + 1}</td>
-                        <td className="py-3">
-                          <span className="font-semibold text-neutral text-sm">
-                            {c.name} ({c.symbol ?? ""})
-                          </span>
-                        </td>
-                        <td className="py-3 text-sm font-medium text-neutral">{formatEur(price)}</td>
-                        <td className="py-3 text-sm">
-                          <ChangeCell value={change} />
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">{formatVolume(txVolume)}</td>
-                      </tr>
-                    );
-                  })}
+                  return (
+                    <tr key={c.id} className="border-b border-base-100 hover:bg-slate-50 transition-colors">
+                      <td className="text-gray-400 text-sm py-3">{idx + 1}</td>
+                      <td className="py-3">
+                        <span className="font-semibold text-neutral text-sm">
+                          {c.name} ({c.symbol ?? ""})
+                        </span>
+                      </td>
+                      <td className="py-3 text-sm font-medium text-neutral">{formatEur(price)}</td>
+                      <td className="py-3 text-sm">
+                        <ChangeCell value={change} />
+                      </td>
+                      <td className="py-3 text-sm text-gray-600">{formatVolume(txVolume)}</td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
           {!isLoading && filtered.length === 0 && (

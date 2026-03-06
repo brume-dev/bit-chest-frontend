@@ -2,10 +2,12 @@ import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useLogout } from "../lib/hooks";
 
+// Logout button that clears auth and redirects to login
 export function SidebarLogoutButton() {
   const navigate = useNavigate();
   const logoutMutation = useLogout();
 
+  // Handle logout click event
   function handleLogout() {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {

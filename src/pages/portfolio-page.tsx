@@ -36,13 +36,12 @@ function StatCard({
 			<p className="text-2xl sm:text-3xl font-bold text-neutral">{value}</p>
 			{sub != null && (
 				<span
-					className={`text-xs font-semibold ${
-						positive === true
+					className={`text-xs font-semibold ${positive === true
 							? "text-success"
 							: positive === false
 								? "text-error"
 								: "text-neutral/40"
-					}`}
+						}`}
 				>
 					{sub}
 				</span>
@@ -110,13 +109,16 @@ function SkeletonRow() {
 
 // ── main page ──────────────────────────────────────────────────────────────
 
+// User portfolio page showing crypto holdings
 export function PortfolioPage() {
 	const { data: user } = useCurrentUser();
 	const { data: transactions = [], isLoading: txLoading } = useTransactions();
 	const { data: cryptos = [], isLoading: cryptosLoading } = useCryptos();
 
+	// Check if loading or both queries resolved
 	const isLoading = txLoading || cryptosLoading;
 
+	// Skip computation while loading
 	const portfolio: PortfolioRow[] = isLoading
 		? []
 		: buildPortfolio(transactions, cryptos);
@@ -127,9 +129,9 @@ export function PortfolioPage() {
 	const weighted24hPct =
 		totalValue > 0
 			? portfolio.reduce(
-					(s, r) => s + (r.valueEur / totalValue) * r.change24h,
-					0,
-				)
+				(s, r) => s + (r.valueEur / totalValue) * r.change24h,
+				0,
+			)
 			: 0;
 	const change24hEur = totalValue > 0 ? (weighted24hPct / 100) * totalValue : 0;
 

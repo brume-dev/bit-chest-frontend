@@ -16,6 +16,7 @@ interface UserModalProps {
   onSuccess: () => void;
 }
 
+// Nested form field component for modal
 function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
   return (
     <div className="form-control w-full">
@@ -27,14 +28,18 @@ function Field({ label, id, children }: { label: string; id: string; children: R
   );
 }
 
+// Generate random password string
 function generatePassword(length = 12): string {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  // Build string from random character indices
   return Array.from(crypto.getRandomValues(new Uint8Array(length)))
     .map((n) => chars[n % chars.length])
     .join("");
 }
 
+// Modal for creating or editing users
 export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: UserModalProps) {
+  // Determine if editing existing user
   const isEdit = mode === "edit";
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -44,10 +49,14 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
 
+  // Check if either mutation is pending
   const isPending = createMutation.isPending || updateMutation.isPending;
+  // Get error from either mutation
   const errorMessage = (createMutation.error ?? updateMutation.error)?.message ?? null;
 
+  // Reset form when modal closes
   useEffect(() => {
+    // Skip if modal not open
     if (!isOpen) return;
     createMutation.reset();
     updateMutation.reset();
@@ -57,6 +66,7 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
     if (!isEdit) formRef.current?.reset();
   }, [isOpen, createMutation.reset]);
 
+  // Handle password generation click
   function handleGenerate() {
     const newPassword = generatePassword(12);
     setPassword(newPassword);
@@ -64,16 +74,22 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
     setCopied(false);
   }
 
+  // Copy password to clipboard
   function handleCopy() {
+    // Abort if no password to copy
     if (!password) return;
     navigator.clipboard.writeText(password);
     setCopied(true);
+    // Clear copied status after 2 seconds
     setTimeout(() => setCopied(false), 2000);
   }
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Prevent default form submission
     e.preventDefault();
 
+    // Extract form field values
     const formData = new FormData(e.currentTarget);
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
@@ -81,6 +97,7 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
     const phoneNumber = formData.get("phoneNumber") as string;
     const role = formData.get("roles") as "user" | "admin";
 
+    // Determine if updating or creating
     if (isEdit && user) {
       updateMutation.mutate(
         { id: user.id, data: { firstName, lastName, email, phoneNumber, role } },
@@ -104,6 +121,7 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
     }
   };
 
+  // Hide modal if not open
   if (!isOpen) return null;
 
   return (
@@ -250,11 +268,10 @@ export default function UserModal({ mode, user, isOpen, onClose, onSuccess }: Us
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className={`btn btn-xs rounded-full transition-all ${
-                      copied
+                    className={`btn btn-xs rounded-full transition-all ${copied
                         ? "btn-success text-white border-none"
                         : "btn-outline border-base-300 text-base-content/60 hover:border-primary hover:text-primary"
-                    }`}
+                      }`}
                   >
                     {copied ? "✓ Copied!" : "Copy"}
                   </button>

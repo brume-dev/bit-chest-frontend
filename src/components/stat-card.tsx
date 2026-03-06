@@ -1,3 +1,4 @@
+// Display a statistic card with label, value, and sub-info
 export function StatCard({
 	label,
 	value,
@@ -20,15 +21,15 @@ export function StatCard({
 				</span>
 			</div>
 			<p className="text-2xl sm:text-3xl font-bold text-neutral">{value}</p>
+			{/* Show sub-info if provided */}
 			{sub !== undefined && sub !== null && (
 				<span
-					className={`text-xs font-semibold ${
-						positive === true
+					className={`text-xs font-semibold ${positive === true
 							? "text-success"
 							: positive === false
 								? "text-error"
 								: "text-neutral/40"
-					}`}
+						}`}
 				>
 					{sub}
 				</span>

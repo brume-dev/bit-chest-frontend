@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type * as Types from "../lib/types";
 import * as Api from "./api";
 
+// Authenticate user with email and password
 export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -13,6 +14,7 @@ export function useLogin() {
   });
 }
 
+// Create new user account with registration data
 export function useRegister() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -24,6 +26,7 @@ export function useRegister() {
   });
 }
 
+// Fetch currently logged-in user profile
 export function useCurrentUser() {
   return useQuery({
     queryKey: ["auth", "me"],
@@ -31,16 +34,19 @@ export function useCurrentUser() {
   });
 }
 
+// Update current user profile information
 export function useUpdateCurrentUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Types.UpdateCurrentUserRequest) => Api.updateCurrentUser(data),
+    mutationFn: (data: Types.UpdateCurrentUserRequest) =>
+      Api.updateCurrentUser(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
 }
 
+// Log out current user and clear state
 export function useLogout() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -53,6 +59,7 @@ export function useLogout() {
   });
 }
 
+// Fetch all transactions for current user
 export function useTransactions() {
   return useQuery({
     queryKey: ["transactions"],
@@ -60,6 +67,7 @@ export function useTransactions() {
   });
 }
 
+// Fetch single transaction by ID
 export function useTransaction(id: number) {
   return useQuery({
     queryKey: ["transactions", id],
@@ -68,6 +76,7 @@ export function useTransaction(id: number) {
   });
 }
 
+// Create new buy or sell transaction
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -80,6 +89,7 @@ export function useCreateTransaction() {
   });
 }
 
+// Fetch all cryptocurrencies with price histories
 export function useCryptos() {
   return useQuery({
     queryKey: ["cryptos"],
@@ -87,6 +97,7 @@ export function useCryptos() {
   });
 }
 
+// Fetch single cryptocurrency with full price history
 export function useCrypto(id: number) {
   return useQuery({
     queryKey: ["cryptos", id],
@@ -95,6 +106,7 @@ export function useCrypto(id: number) {
   });
 }
 
+// Fetch all users (admin only)
 export function useUsers() {
   return useQuery({
     queryKey: ["users"],
@@ -102,6 +114,7 @@ export function useUsers() {
   });
 }
 
+// Fetch single user by ID
 export function useUser(id: number) {
   return useQuery({
     queryKey: ["users", id],
@@ -110,6 +123,7 @@ export function useUser(id: number) {
   });
 }
 
+// Create new user account (admin only)
 export function useCreateUser() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -120,16 +134,19 @@ export function useCreateUser() {
   });
 }
 
+// Update existing user (admin only)
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Types.UpdateUserRequest }) => Api.updateUser(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Types.UpdateUserRequest }) =>
+      Api.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 }
 
+// Delete user by ID (admin only)
 export function useDeleteUser() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -140,12 +157,14 @@ export function useDeleteUser() {
   });
 }
 
+// Change current user's password
 export function useChangePassword() {
   return useMutation({
     mutationFn: Api.changePassword,
   });
 }
 
+// Fetch all transactions across all users
 export function useAllTransactions() {
   return useQuery({
     queryKey: ["transactions", "all"],

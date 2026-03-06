@@ -6,11 +6,13 @@ import { Logo } from "../components/logo.tsx";
 import { useRegister } from "../lib/hooks.ts";
 import type { RegisterRequest } from "../types.ts";
 
+// User registration page for new accounts
 export function RegisterPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const registerMutation = useRegister();
 
+  // Extract registration form data
   function registerAction(formData: FormData) {
     const data: RegisterRequest = {
       firstName: formData.get("firstName") as string,

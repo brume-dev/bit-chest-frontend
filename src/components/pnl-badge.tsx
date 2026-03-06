@@ -1,7 +1,9 @@
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { fmt, fmtUSD } from "../lib/helpers";
 
+// Display P/L value with trend icon and color
 export function PnlBadge({ pnl, pnlPct }: { pnl: number; pnlPct: number }) {
+	// Show neutral badge for negligible P/L
 	if (Math.abs(pnl) < 0.005) {
 		return (
 			<div className="flex flex-col items-end gap-0.5">
@@ -12,6 +14,7 @@ export function PnlBadge({ pnl, pnlPct }: { pnl: number; pnlPct: number }) {
 			</div>
 		);
 	}
+	// Show gain or loss with appropriate color
 	const positive = pnl > 0;
 	return (
 		<div className="flex flex-col items-end gap-0.5">

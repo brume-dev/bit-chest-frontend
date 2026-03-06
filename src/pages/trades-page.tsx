@@ -18,6 +18,7 @@ interface PreviewData {
   cryptoQty: number;
 }
 
+// Buy and sell crypto trading page
 export function TradesPage() {
   const { data: user } = useCurrentUser();
   const { data: cryptos = [] } = useCryptos();
@@ -33,6 +34,7 @@ export function TradesPage() {
   // Fetch the full crypto (with prices) only when one is selected
   const { data: selectedCrypto, isLoading: priceLoading } = useCrypto(selectedCryptoId);
 
+  // Build current holding amounts from transactions
   const holdings = useMemo(() => buildHoldings(transactions), [transactions]);
 
   const currentPrice = selectedCrypto ? latestPrice(selectedCrypto) : 0;
@@ -44,13 +46,16 @@ export function TradesPage() {
 
   const amount = Number.parseFloat(amountStr) || 0;
   // Buy: user enters USD → compute crypto qty. Sell: user enters crypto qty → compute USD value
+  // Calculate crypto quantity based on input amount
   const cryptoQty = tab === "buy" ? (currentPrice > 0 && amount > 0 ? amount / currentPrice : 0) : amount;
   const usdValue = tab === "sell" ? (currentPrice > 0 && amount > 0 ? amount * currentPrice : 0) : amount;
   const usdBalance = Number.parseFloat(user?.balance ?? "0");
   const selectedHolding = selectedCryptoId > 0 ? (holdings[selectedCryptoId] ?? 0) : 0;
   const selectedHoldingValue = currentPrice > 0 ? selectedHolding * currentPrice : 0;
 
+  // Handle preview generation click
   function handlePreview() {
+    // Validate preview has required data
     if (!selectedCrypto || !latestPriceEntry || amount <= 0) return;
     setPreview({
       tab,
@@ -65,7 +70,9 @@ export function TradesPage() {
     setConfirmed(false);
   }
 
+  // Handle transaction confirmation
   function handleConfirm() {
+    // Cancel preview and reset to initial state
     if (!preview) return;
     createTransaction.mutate(
       {
@@ -84,6 +91,7 @@ export function TradesPage() {
     );
   }
 
+  // Reset form and state after transaction
   function handleReset() {
     setPreview(null);
     setConfirmed(false);
@@ -91,12 +99,14 @@ export function TradesPage() {
     createTransaction.reset();
   }
 
+  // Handle switching between buy and sell tabs
   function handleTabChange(newTab: Tab) {
     setTab(newTab);
     setPreview(null);
     setAmountStr("");
   }
 
+  // Check if preview button should be enabled
   const canPreview = !!selectedCrypto && !!latestPriceEntry && amount > 0 && !priceLoading;
 
   return (
@@ -112,11 +122,10 @@ export function TradesPage() {
               <button
                 type="button"
                 onClick={() => handleTabChange("buy")}
-                className={`flex-1 py-3.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${
-                  tab === "buy"
+                className={`flex-1 py-3.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${tab === "buy"
                     ? "text-secondary border-b-2 border-secondary bg-blue-50/50"
                     : "text-gray-400 hover:text-gray-600"
-                }`}
+                  }`}
               >
                 <TrendingUp size={15} />
                 Buy
@@ -124,11 +133,10 @@ export function TradesPage() {
               <button
                 type="button"
                 onClick={() => handleTabChange("sell")}
-                className={`flex-1 py-3.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${
-                  tab === "sell"
+                className={`flex-1 py-3.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${tab === "sell"
                     ? "text-error border-b-2 border-error bg-red-50/50"
                     : "text-gray-400 hover:text-gray-600"
-                }`}
+                  }`}
               >
                 <TrendingDown size={15} />
                 Sell
@@ -230,9 +238,8 @@ export function TradesPage() {
                 type="button"
                 disabled={!canPreview}
                 onClick={handlePreview}
-                className={`btn w-full text-white border-none ${
-                  tab === "buy" ? "btn-secondary" : "btn-error"
-                } disabled:bg-gray-200 disabled:text-gray-400`}
+                className={`btn w-full text-white border-none ${tab === "buy" ? "btn-secondary" : "btn-error"
+                  } disabled:bg-gray-200 disabled:text-gray-400`}
               >
                 {tab === "buy" ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                 Preview {tab === "buy" ? "Buy" : "Sell"}
@@ -288,18 +295,16 @@ export function TradesPage() {
           {/* Transaction Preview panel */}
           {preview && (
             <div
-              className={`bg-base-100 rounded-2xl shadow-sm border overflow-hidden ${
-                confirmed ? "border-success/40" : preview.tab === "buy" ? "border-secondary/30" : "border-error/30"
-              }`}
+              className={`bg-base-100 rounded-2xl shadow-sm border overflow-hidden ${confirmed ? "border-success/40" : preview.tab === "buy" ? "border-secondary/30" : "border-error/30"
+                }`}
             >
               <div
-                className={`px-5 py-3 text-xs font-bold uppercase tracking-wider ${
-                  confirmed
+                className={`px-5 py-3 text-xs font-bold uppercase tracking-wider ${confirmed
                     ? "bg-success/10 text-success"
                     : preview.tab === "buy"
                       ? "bg-blue-50 text-secondary"
                       : "bg-red-50 text-error"
-                }`}
+                  }`}
               >
                 Transaction Preview
               </div>
@@ -368,9 +373,8 @@ export function TradesPage() {
                       type="button"
                       disabled={createTransaction.isPending}
                       onClick={handleConfirm}
-                      className={`btn btn-sm w-full text-white border-none ${
-                        preview.tab === "buy" ? "btn-secondary" : "btn-error"
-                      } disabled:bg-gray-200`}
+                      className={`btn btn-sm w-full text-white border-none ${preview.tab === "buy" ? "btn-secondary" : "btn-error"
+                        } disabled:bg-gray-200`}
                     >
                       {createTransaction.isPending ? (
                         <span className="loading loading-spinner loading-xs" />

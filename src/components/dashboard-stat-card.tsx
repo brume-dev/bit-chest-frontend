@@ -8,6 +8,7 @@ interface Props {
   positive?: boolean;
 }
 
+// Display stat card with label, value, and optional sub-info
 export function StatCard({ icon, label, value, sub, positive }: Props) {
   return (
     <div className="card bg-base-100 border border-base-200 shadow-sm">
@@ -17,6 +18,7 @@ export function StatCard({ icon, label, value, sub, positive }: Props) {
           <span className="text-secondary/80">{icon}</span>
         </div>
         <p className="text-2xl font-bold text-neutral tracking-tight">{value}</p>
+        {/* Show sub-info if provided */}
         {sub && (
           <p className={`text-xs font-semibold flex items-center gap-1 ${positive ? "text-success" : "text-error"}`}>
             {positive ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}

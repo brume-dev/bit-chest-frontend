@@ -16,27 +16,33 @@ import { PortfolioPage } from "./pages/portfolio-page";
 import { CryptoPage } from "./pages/crypto-page";
 import { TradesPage } from "./pages/trades-page";
 
+// Initialize React Query client
 const queryClient = new QueryClient();
 
+// Setup app routing and authentication guards
 // biome-ignore lint/style/noNonNullAssertion: <>
 createRoot(document.querySelector("#root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          {/* Protected routes requiring authentication */}
           <Route element={<AuthGuard />}>
+            {/* Sidebar layout for authenticated pages */}
             <Route element={<SidebarLayout />}>
               <Route path="/" element={<IndexPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/trade" element={<TradesPage />} />
               <Route path="/cryptos" element={<CryptoPage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
+              {/* Admin-only routes */}
               <Route element={<AdminGuard />}>
                 <Route path="/clients" element={<ClientsManagement />} />
                 <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
               </Route>
             </Route>
           </Route>
+          {/* Public routes for auth pages */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

@@ -7,6 +7,7 @@ interface Props {
   children: ReactNode;
 }
 
+// Wrapper form field component with label
 export function Field({ label, id, icon, children }: Props) {
   return (
     <div className="form-control w-full">

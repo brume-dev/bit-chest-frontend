@@ -1,5 +1,6 @@
 import { Wallet } from "lucide-react";
 
+// Display app logo with wallet icon
 export function Logo() {
   return (
     <div className="flex items-center gap-3 px-6 py-8">

@@ -9,6 +9,7 @@ import { useAllTransactions, useCryptos, useUsers } from "../lib/hooks";
 
 // ── Error banner ──────────────────────────────────────────────────────────────
 
+// Display error message banner
 function ErrorBanner({ message }: { message: string }) {
   return (
     <div className="alert alert-error text-sm">
@@ -20,12 +21,14 @@ function ErrorBanner({ message }: { message: string }) {
 
 // ── Section skeleton ──────────────────────────────────────────────────────────
 
+// Display loading skeleton card
 function CardSkeleton({ className = "" }: { className?: string }) {
   return <div className={`card bg-base-100 border border-base-200 shadow-sm animate-pulse ${className}`} />;
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+// Admin dashboard with platform stats and metrics
 export function AdminDashboardPage() {
   const { data: users, isLoading: usersLoading, isError: usersError, error: usersErrorMsg } = useUsers();
 
@@ -34,8 +37,11 @@ export function AdminDashboardPage() {
   const { data: cryptos, isLoading: cryptosLoading, isError: cryptosError, error: cryptosErrorMsg } = useCryptos();
 
   // ── Guard: only compute derived data when all queries have resolved successfully ──
+  // Check loading and error states
   const isLoading = usersLoading || txLoading || cryptosLoading;
+  // Check if any query has errors
   const hasError = usersError || txError || cryptosError;
+  // Only compute derived data when all ready
   const isReady = !isLoading && !hasError && users !== undefined && transactions !== undefined && cryptos !== undefined;
 
   // Derived stats — only computed when isReady, never on undefined data
@@ -44,12 +50,16 @@ export function AdminDashboardPage() {
   const growthData = isReady ? buildGrowthData(users) : [];
   const topCryptos = isReady ? buildTopCryptos(transactions, cryptos) : [];
   const monthSignups = growthData.reduce((s, d) => s + d.users, 0);
+  // Skip growth calculation if insufficient data
   const growthPct =
     growthData.length > 1
+      // Calculate percentage difference between start and end
       ? ((growthData.at(-1)!.users - growthData[0].users) / Math.max(growthData[0].users, 1)) * 100
       : 0;
+  // Count buy and sell transactions
   const totalBuys = isReady ? transactions.filter((tx) => tx.type === "buy").length : 0;
   const totalSells = isReady ? transactions.filter((tx) => tx.type === "sell").length : 0;
+  // Get 10 most recent transactions
   const recentActivity = isReady
     ? [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10)
     : [];

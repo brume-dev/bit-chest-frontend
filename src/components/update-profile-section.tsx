@@ -5,6 +5,7 @@ interface Props {
   children: ReactNode;
 }
 
+// Wrapper for profile update sections
 export function UpdateProfileSection({ title, children }: Props) {
   return (
     <div className="bg-base-100 rounded-2xl shadow-sm border border-base-200 p-6 space-y-4">

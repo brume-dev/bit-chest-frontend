@@ -1,6 +1,8 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
+// Display percentage change with trend icon
 export function ChangeCell({ pct }: { pct: number }) {
+  // Determine if positive or negative
   const positive = pct >= 0;
   return (
     <span

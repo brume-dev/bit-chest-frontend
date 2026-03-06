@@ -1,5 +1,6 @@
+// Display crypto avatar with color-coded background
 export function CryptoAvatar({ abbr }: { abbr: string }) {
-	// Simple colorful avatar based on abbreviation
+	// Define color map for common cryptos
 	const colors: Record<string, string> = {
 		BTC: "bg-amber-500",
 		ETH: "bg-indigo-500",
@@ -9,7 +10,7 @@ export function CryptoAvatar({ abbr }: { abbr: string }) {
 		ADA: "bg-blue-500",
 		XRP: "bg-sky-500",
 	};
-	const bg = colors[abbr] ?? "bg-neutral";
+	const bg = colors[abbr] ?? "bg-neutral"; // Fallback to neutral
 	return (
 		<div
 			className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0`}

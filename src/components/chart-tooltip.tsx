@@ -4,7 +4,9 @@ interface Props {
   label?: string;
 }
 
+// Display chart tooltip with label and value
 export function ChartTooltip({ active, payload, label }: Props) {
+  // Hide if tooltip not active or no data
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-base-100 border border-base-200 rounded-lg px-3 py-2 shadow-md text-xs">
