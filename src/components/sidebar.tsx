@@ -15,7 +15,7 @@ export function Sidebar() {
   ];
 
   const adminNavItems = [
-    { name: "Dashboard", path: "/", icon: <LayoutDashboardIcon size={20} /> },
+    { name: "Dashboard", path: "/admin-dashboard", icon: <LayoutDashboardIcon size={20} /> },
     { name: "Clients", path: "/clients", icon: <UserIcon size={20} /> },
     { name: "Cryptos", path: "/cryptos", icon: <BriefcaseIcon size={20} /> },
   ];
